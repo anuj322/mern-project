@@ -7,7 +7,17 @@ pipeline {
         DOCKERHUB_CREDENTIALS = 'dockerHub-creds'
     }
 
+    options {
+        skipStagesAfterUnstable()   
+    }
+
     stages {
+
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()  
+            }
+        }
 
         stage('Checkout') {
             steps {
@@ -26,6 +36,7 @@ pipeline {
         stage('Build Frontend Image') {
             steps {
                 script {
+                    
                     docker.build(FRONTEND_IMAGE, "./frontend")
                 }
             }
@@ -45,10 +56,10 @@ pipeline {
 
     post {
         success {
-            echo 'Docker images built and pushed successfully 🚀'
+            echo 'Docker images built and pushed successfully'
         }
         failure {
-            echo 'Pipeline failed ❌'
+            echo 'Pipeline failed'
         }
     }
 }
