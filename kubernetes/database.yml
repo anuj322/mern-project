@@ -1,5 +1,11 @@
 ---
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: my-app
+
+---
+apiVersion: v1
 kind: Secret
 metadata:
   name: mongodb-secret
@@ -17,6 +23,20 @@ metadata:
   namespace: my-app
 data:
   MONGO_INITDB_DATABASE: "wanderlust"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-pvc
+  namespace: my-app
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: gp2
+  resources:
+    requests:
+      storage: 5Gi
 
 ---
 apiVersion: apps/v1
@@ -59,16 +79,19 @@ spec:
         volumeMounts:
         - name: mongo-storage
           mountPath: /data/db
+  volumeClaimTemplates: []  # No dynamic PVC; we will use the static PVC below
+  # Attach the manually created PVC
+  podManagementPolicy: Parallel
   volumeClaimTemplates:
   - metadata:
       name: mongo-storage
     spec:
       accessModes:
         - ReadWriteOnce
-      storageClassName: gp2   
+      storageClassName: gp2
       resources:
         requests:
-          storage: 1Gi
+          storage: 5Gi
 
 ---
 apiVersion: v1
