@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: your-dockerhub-username/backend:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: MONGO_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: MONGO_HOST
+        - name: MONGO_DB
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: MONGO_DB
+        - name: CORS_ORIGIN
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: CORS_ORIGIN
+        - name: MONGO_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: backend-secret
+              key: MONGO_USERNAME
+        - name: MONGO_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: backend-secret
+              key: MONGO_PASSWORD

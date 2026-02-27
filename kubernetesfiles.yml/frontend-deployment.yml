@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: your-dockerhub-username/frontend:latest
+          ports:
+            - containerPort: 5173
+          env:
+            - name: VITE_API_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: VITE_API_PATH
