@@ -1,0 +1,4 @@
+k8s floder have kubernetes files for minikube and kubeadm 
+kubernetes folder have file for eks cluster 
+note:-
+remember when you are using eks cluster then you need to add some addons using eks command because it shows pending and do not create any pvc because you dont add any addons related to eks. aws treated eks as a completely different service in aws and seprate it that why we dont able to use storageclass without that addon
