@@ -7,23 +7,7 @@ type: Opaque
 stringData:
   MONGO_INITDB_ROOT_USERNAME: admin
   MONGO_INITDB_ROOT_PASSWORD: admin
-
----
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: mongo-config
-  namespace: my-app
-data:
-  mongod.conf: |
-    storage:
-      dbPath: /data/db
-    net:
-      bindIp: 0.0.0.0
-      port: 27017
-    security:
-      authorization: enabled
+  MONGO_INITDB_DATABASE: wanderlust
 
 ---
 
@@ -60,24 +44,31 @@ spec:
       containers:
       - name: mongodb
         image: mongo:latest
-        args: ["--config", "/etc/mongo/mongod.conf"]
         ports:
         - containerPort: 27017
-        envFrom:
-        - secretRef:
-            name: mongo-secret
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: MONGO_INITDB_ROOT_USERNAME
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: MONGO_INITDB_ROOT_PASSWORD
+        - name: MONGO_INITDB_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: MONGO_INITDB_DATABASE
         volumeMounts:
         - name: mongo-storage
           mountPath: /data/db
-        - name: mongo-config-volume
-          mountPath: /etc/mongo
       volumes:
       - name: mongo-storage
         persistentVolumeClaim:
           claimName: mongo-pvc
-      - name: mongo-config-volume
-        configMap:
-          name: mongo-config
 
 ---
 
