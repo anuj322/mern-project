@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: mongodb
+  namespace: my-app
 spec:
   serviceName: "mongodb"
   replicas: 1
@@ -18,11 +19,22 @@ spec:
         image: mongo:latest
         ports:
         - containerPort: 27017
-        envFrom:
-          - configMapRef:
-              name: mongodb-config
-          - secretRef:
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom:
+            secretKeyRef:
               name: mongodb-secret
+              key: MONGO_INITDB_ROOT_USERNAME
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: MONGO_INITDB_ROOT_PASSWORD
+        - name: MONGO_INITDB_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: mongodb-config
+              key: MONGO_INITDB_DATABASE
         volumeMounts:
         - name: mongo-storage
           mountPath: /data/db
@@ -30,7 +42,8 @@ spec:
   - metadata:
       name: mongo-storage
     spec:
-      accessModes: ["ReadWriteOnce"]
+      accessModes:
+        - ReadWriteOnce
       storageClassName: gp2
       resources:
         requests:
