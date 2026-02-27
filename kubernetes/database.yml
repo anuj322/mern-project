@@ -79,19 +79,10 @@ spec:
         volumeMounts:
         - name: mongo-storage
           mountPath: /data/db
-  volumeClaimTemplates: []  # No dynamic PVC; we will use the static PVC below
-  # Attach the manually created PVC
-  podManagementPolicy: Parallel
-  volumeClaimTemplates:
-  - metadata:
-      name: mongo-storage
-    spec:
-      accessModes:
-        - ReadWriteOnce
-      storageClassName: gp2
-      resources:
-        requests:
-          storage: 5Gi
+      volumes:
+      - name: mongo-storage
+        persistentVolumeClaim:
+          claimName: mongo-pvc  # attach the static PVC here
 
 ---
 apiVersion: v1
