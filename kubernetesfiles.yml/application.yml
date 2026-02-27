@@ -16,7 +16,3 @@ spec:
     automated:
       prune: true
       selfHeal: true
-  # createNamespace is now at spec level, not under syncPolicy
-  # This will make Argo CD create the namespace if it doesn't exist
-  # Only works with Argo CD >= 2.x
-  createNamespace: true
